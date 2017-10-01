@@ -1,0 +1,87 @@
+What is Swagger?
+
+The goal of Swagger™ is to define a standard, language-agnostic interface to REST APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection. When properly defined via Swagger, a consumer can understand and interact with the remote service with a minimal amount of implementation logic. Similar to what interfaces have done for lower-level programming, Swagger removes the guesswork in calling the service.
+
+
+If you're an API provider and want to use Swagger to describe your APIs - there are several approaches available:
+
+A top-down approach where you would use the Swagger Editor to create your Swagger definition and then use the integrated Swagger Codegen tools to generate server implementation.
+A bottom-up approach where you have an existing REST API for which you want to create a Swagger definition. Either you create the definition manually (using the same Swagger Editor mentioned above), or if you are using one of the supported frameworks (JAX-RS, node.js, etc), you can get the Swagger definition generated automatically for you.
+
+
+Uses:
+=======
+1. Documentation of the web services created. Any changes in the web service, then document needs to be changed. But swagger will create such document and automatically update in case of any change in the web service.
+
+
+
+How to start:
+---------------
+
+1. Let’s have a existing spring boot application ready.
+2. Add dependency of swagger in pom.xml
+<dependency>
+  <groupId>io.springfox</groupId>
+  <artifactId>springfox-swagger2</artifactId>
+  <version>2.2.2</version>
+</dependency>
+<dependency>
+  <groupId>io.springfox</groupId>
+  <artifactId>springfox-swagger-ui</artifactId>
+  <version>2.2.2</version>
+</dependency>
+
+3. Create the new java class(swaggerconfig.java).
+
+@Configuration
+@EnableSwagger2
+public class SwaggerConfig {
+
+	@Bean
+	public Docket postsApi() {
+		return new Docket(DocumentationType.SWAGGER_2).groupName("public-api")
+				.apiInfo(apiInfo()).select().paths(postPaths()).build();
+	}
+
+	private Predicate<String> postPaths() {
+		return or(regex("/api/posts.*"), regex("/api/javainuse.*"));
+	}
+
+	private ApiInfo apiInfo() {
+		return new ApiInfoBuilder().title("JavaInUse API")
+				.description("JavaInUse API reference for developers")
+				.termsOfServiceUrl("http://javainuse.com")
+				.contact("javainuse@gmail.com").license("JavaInUse License")
+				.licenseUrl("javainuse@gmail.com").version("1.0").build();
+	}
+
+}
+
+
+
+Additional behavior:
+
+1. Add this line on top of the controller method (@ApiOperation(value="return all student info”)). We can view this descption in swagger UI.
+
+ @ApiOperation(value="return all student info")
+   @RequestMapping(value="/",method = RequestMethod.GET)
+   public HashMap<Long,Student> getAllStudents(){
+      return DemoApplication.hmStudent;
+   }
+
+2. Add description at class level.
+
+@Api(value="First try controller")
+class StudentController{
+
+4. To check the swagger stuff , go to http://localhost:8080/swagger-ui.html
+
+
+Difference between postman and swagger is :
+- In postman , we have to enter the “url’s” and the method such as “get/post/put/deleter”
+- In swagger, it will by default shows all method and endpoints in the service. Just click the see the response.
+
+
+
+
+
